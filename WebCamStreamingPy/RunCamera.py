@@ -8,29 +8,36 @@ class RunCamera(object):
         T.lock=threading.Lock()
         T.event=threading.Event()
         T.video = cv2.VideoCapture(0)
-        T.frame=None
-        T.frameid=0
-        T.video.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
-        T.video.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+        T.frameI=None
+        T.frameP=None
+        T.frameidI=-1
+        T.frameidP=-1
+        T.video.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        T.video.set(cv2.CAP_PROP_FRAME_HEIGHT,720)
     def __del__(self):
         self.video.release()
-    def get_frame(T,wfid):
-        if wfid==T.frameid:
+    def get_frameP(T,wfid):
+        if wfid==T.frameidI:
             T.event.wait()
             T.event.clear()
         T.lock.acquire()
-        frame=T.frame
-        fid=T.frameid
+        fid=T.frameidI
+        if T.frameidP==fid:
+            frameP=T.frameP
+        else:
+            frame=cv2.resize(T.frameI,(320,180))
+            ret, jpg = cv2.imencode('.jpg', frame)
+            frameP=jpg.tobytes()
+            T.frameP=frameP
+            T.frameidP=fid
         T.lock.release()
-        return fid,frame
+        return fid,frameP
     def tRun(T):
         while True:
-            sleep(0.1)
             success, image = T.video.read()
-            ret, jpeg = cv2.imencode('.jpg', image)
             T.lock.acquire()
-            T.frameid+=1
-            T.frame=jpeg.tobytes()
+            T.frameidI+=1
+            T.frameI=image;
             T.event.set()
             T.lock.release()
         return

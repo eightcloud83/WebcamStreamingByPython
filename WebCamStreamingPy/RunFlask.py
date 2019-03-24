@@ -5,9 +5,13 @@ import threading
 
 app = Flask(__name__)
 
-def  tRun():
-    global app
-    app.run(host="0.0.0.0")
+class RunFlask(object):
+    def __init__(T):
+        global app
+        T.app=app
+
+    def  tRun(T):
+        T.app.run(host="0.0.0.0",port=5000)
 
 @app.route('/')
 def index():
@@ -16,7 +20,7 @@ def index():
 def gen(camera):
     wfid=0
     while True:
-        wfid,frame = camera.get_frame(wfid)
+        wfid,frame = camera.get_frameP(wfid)
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 

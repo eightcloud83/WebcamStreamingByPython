@@ -1,10 +1,8 @@
 import RunCamera;
 import RunFlask;
-camera=None
-flaskapp=None
 
 def Init():
     global camera
-    global flaskapp
+    global flask
     camera=RunCamera.RunCamera()
-    flaskapp=RunFlask.Init()
+    flask=RunFlask.RunFlask()
